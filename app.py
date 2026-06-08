@@ -2,18 +2,19 @@ import os
 import sys
 
 # ==========================================
-# WINDOWS ENVIRONMENT COOPERATIVE OVERRIDE
+# PLATFORM-AGNOSTIC ENVIRONMENT OVERRIDE
 # ==========================================
-# Programmatically find the absolute path of your local virtual environment
 current_working_directory = os.path.dirname(os.path.abspath(__file__))
-local_venv_packages = os.path.join(current_working_directory, ".venv", "Lib", "site-packages")
 
-# If the local venv package directory exists, force Python to prioritize it at index 0
-if os.path.exists(local_venv_packages) and local_venv_packages not in sys.path:
-    sys.path.insert(0, local_venv_packages)
+# ONLY inject local paths if running locally (not on Streamlit Cloud)
+# Streamlit Cloud builds its path under '/home/adminuser/' or '/mount/src/'
+if "adminuser" not in current_working_directory and "mount" not in current_working_directory:
+    local_venv_packages = os.path.join(current_working_directory, ".venv", "Lib", "site-packages")
+    if os.path.exists(local_venv_packages) and local_venv_packages not in sys.path:
+        sys.path.insert(0, local_venv_packages)
 
 # ==========================================
-# STANDARD DEPENDENCY IMPORTS (Now Isolated)
+# STANDARD DEPENDENCY IMPORTS
 # ==========================================
 import asyncio
 import json
